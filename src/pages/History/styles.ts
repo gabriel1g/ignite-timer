@@ -71,3 +71,28 @@ export const HistoryList = styled.div`
     }
   }
 `;
+
+interface StatusProps {
+  status: 'completed' | 'progress' | 'interrupted';
+}
+
+export const TaskStatus = styled.span<StatusProps>`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    content: '●';
+    color: ${({ theme, status }) => {
+      switch (status) {
+        case 'completed':
+          return theme['green-300'];
+        case 'progress':
+          return theme['yellow-500'];
+        case 'interrupted':
+          return theme['red-500'];
+      }
+    }};
+    font-size: 1rem;
+  }
+`;
