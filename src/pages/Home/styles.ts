@@ -50,6 +50,10 @@ export const FormContainer = styled.div`
 
 export const TaskInput = styled.input`
   flex-grow: 1;
+
+  &::-webkit-calendar-picker-indicator {
+    display: none !important;
+  }
 `;
 
 export const MinutesAmountInput = styled.input`
