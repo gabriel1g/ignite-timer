@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const LayoutContainer = styled.div`
-  height: calc(100vh - 10rem);
+  height: 100%;
   padding: 2.5rem;
   border-radius: 8px;
   margin: 5rem 10rem;
