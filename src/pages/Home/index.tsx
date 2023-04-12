@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { differenceInSeconds } from 'date-fns';
 import * as zod from 'zod';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,6 +15,7 @@ interface Pomodoro {
   id: string;
   task: string;
   minutesAmount: number;
+  startDate: Date;
 }
 
 const pomodoroValidationSchema = zod.object({
@@ -31,24 +33,33 @@ export function Home() {
     resolver: zodResolver(pomodoroValidationSchema),
   });
 
-  const activePomodoro = pomodoros.filter((pomodoro) => pomodoro.id === activePomodoroId);
+  const activePomodoro = pomodoros.find((pomodoro) => pomodoro.id === activePomodoroId);
   const isSubmitDisabled = !watch('task');
 
-  const totalSeconds = activePomodoroId ? activePomodoro[0].minutesAmount * 60 : 0;
-  const currentSeconds = activePomodoroId ? totalSeconds - amountSecondsPassed : 0;
-  const minutesAmount = String(Math.floor(currentSeconds / 60)).padStart(2, '0');
-  const secondsAmount = String(currentSeconds % 60).padStart(2, '0');
+  const totalSeconds = activePomodoro ? activePomodoro.minutesAmount * 60 : 0;
+  const currentSeconds = totalSeconds - amountSecondsPassed;
+  const minutesAmountDisplay = String(Math.floor(currentSeconds / 60)).padStart(2, '0');
+  const secondsAmountDisplay = String(currentSeconds % 60).padStart(2, '0');
 
   function handleCreateNewPomodoro(data: PomodoroFormData) {
     const newPomodoro: Pomodoro = {
       id: String(new Date().getTime()),
       ...data,
+      startDate: new Date(),
     };
 
     setPomodoros((prevState) => [...prevState, newPomodoro]);
     setActivePomodoroId(newPomodoro.id);
     reset();
   }
+
+  useEffect(() => {
+    if (activePomodoro) {
+      setInterval(() => {
+        setAmountSecondsPassed(differenceInSeconds(new Date(), activePomodoro.startDate));
+      }, 1000);
+    }
+  }, [activePomodoro]);
 
   return (
     <HomeContainer>
@@ -79,11 +90,11 @@ export function Home() {
         </FormContainer>
 
         <CountdownContainer>
-          <span>{minutesAmount[0]}</span>
-          <span>{minutesAmount[1]}</span>
+          <span>{minutesAmountDisplay[0]}</span>
+          <span>{minutesAmountDisplay[1]}</span>
           <span className="separator">:</span>
-          <span>{secondsAmount[0]}</span>
-          <span>{secondsAmount[1]}</span>
+          <span>{secondsAmountDisplay[0]}</span>
+          <span>{secondsAmountDisplay[1]}</span>
         </CountdownContainer>
 
         <CountdownButton disabled={isSubmitDisabled}>
