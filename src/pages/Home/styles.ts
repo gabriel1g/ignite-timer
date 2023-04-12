@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const HomeContainer = styled.main`
-  margin-block: 1.5rem;
+  height: 27rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
