@@ -25,6 +25,7 @@ interface Pomodoro {
   minutesAmount: number;
   startDate: Date;
   interruptedDate?: Date;
+  finishedDate?: Date;
 }
 
 const pomodoroValidationSchema = zod.object({
@@ -81,12 +82,29 @@ export function Home() {
     if (activePomodoro) {
       document.title = `${minutesAmountDisplay}:${secondsAmountDisplay}`;
     }
-  }, [minutesAmountDisplay, secondsAmountDisplay, activePomodoro]);
+  }, [activePomodoro, minutesAmountDisplay, secondsAmountDisplay]);
 
   useEffect(() => {
     if (activePomodoro) {
       var interval = setInterval(() => {
-        setAmountSecondsPassed(differenceInSeconds(new Date(), activePomodoro.startDate));
+        const secondsDifference = differenceInSeconds(new Date(), activePomodoro.startDate);
+
+        if (secondsDifference >= totalSeconds) {
+          setPomodoros((prevState) =>
+            prevState.map((pomodoro) => {
+              if (pomodoro.id === activePomodoroId) {
+                return { ...pomodoro, finishedDate: new Date() };
+              } else {
+                return pomodoro;
+              }
+            })
+          );
+
+          clearInterval(interval);
+          setActivePomodoroId(null);
+        } else {
+          setAmountSecondsPassed(secondsDifference);
+        }
       }, 1000);
     }
 
@@ -94,7 +112,7 @@ export function Home() {
       clearInterval(interval);
       setAmountSecondsPassed(0);
     };
-  }, [activePomodoro]);
+  }, [activePomodoro, totalSeconds, activePomodoroId]);
 
   return (
     <HomeContainer>
