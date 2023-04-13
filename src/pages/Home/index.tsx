@@ -5,9 +5,17 @@ import { differenceInSeconds } from 'date-fns';
 import * as zod from 'zod';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Play } from '@phosphor-icons/react';
+import { Pause, Play } from '@phosphor-icons/react';
 
-import { CountdownButton, CountdownContainer, FormContainer, HomeContainer, MinutesAmountInput, TaskInput } from './styles';
+import {
+  CountdownContainer,
+  FormContainer,
+  HomeContainer,
+  MinutesAmountInput,
+  StartCountdownButton,
+  StopCountdownButton,
+  TaskInput,
+} from './styles';
 
 type PomodoroFormData = zod.infer<typeof pomodoroValidationSchema>;
 
@@ -16,6 +24,7 @@ interface Pomodoro {
   task: string;
   minutesAmount: number;
   startDate: Date;
+  interruptedDate?: Date;
 }
 
 const pomodoroValidationSchema = zod.object({
@@ -24,7 +33,7 @@ const pomodoroValidationSchema = zod.object({
 });
 
 export function Home() {
-  const [activePomodoroId, setActivePomodoroId] = useState<string>('');
+  const [activePomodoroId, setActivePomodoroId] = useState<string | null>(null);
   const [pomodoros, setPomodoros] = useState<Pomodoro[]>([]);
   const [amountSecondsPassed, setAmountSecondsPassed] = useState<number>(0);
 
@@ -50,9 +59,22 @@ export function Home() {
 
     setPomodoros((prevState) => [...prevState, newPomodoro]);
     setActivePomodoroId(newPomodoro.id);
-    setAmountSecondsPassed(0);
 
     reset();
+  }
+
+  function handleInterruptPomodoro() {
+    setPomodoros((prevState) =>
+      prevState.map((pomodoro) => {
+        if (pomodoro.id === activePomodoroId) {
+          return { ...pomodoro, interruptedDate: new Date() };
+        } else {
+          return pomodoro;
+        }
+      })
+    );
+
+    setActivePomodoroId(null);
   }
 
   useEffect(() => {
@@ -70,6 +92,7 @@ export function Home() {
 
     return () => {
       clearInterval(interval);
+      setAmountSecondsPassed(0);
     };
   }, [activePomodoro]);
 
@@ -78,7 +101,14 @@ export function Home() {
       <form onSubmit={handleSubmit(handleCreateNewPomodoro)}>
         <FormContainer>
           <label htmlFor="task">Vou trabalhar em</label>
-          <TaskInput id="task" list="tasks-suggestions" placeholder="Dê um nome para o seu projeto" type="text" {...register('task')} />
+          <TaskInput
+            disabled={!!activePomodoro}
+            id="task"
+            list="tasks-suggestions"
+            placeholder="Dê um nome para o seu projeto"
+            type="text"
+            {...register('task')}
+          />
 
           <datalist id="tasks-suggestions">
             <option value="Task 1" />
@@ -89,6 +119,7 @@ export function Home() {
 
           <label htmlFor="minutesAmount">durante</label>
           <MinutesAmountInput
+            disabled={!!activePomodoro}
             id="minutesAmount"
             max={60}
             min={5}
@@ -109,10 +140,17 @@ export function Home() {
           <span>{secondsAmountDisplay[1]}</span>
         </CountdownContainer>
 
-        <CountdownButton disabled={isSubmitDisabled}>
-          <Play size={24} />
-          Começar
-        </CountdownButton>
+        {activePomodoro ? (
+          <StopCountdownButton onClick={handleInterruptPomodoro}>
+            <Pause size={24} />
+            Finalizar
+          </StopCountdownButton>
+        ) : (
+          <StartCountdownButton disabled={isSubmitDisabled} type="submit">
+            <Play size={24} />
+            Começar
+          </StartCountdownButton>
+        )}
       </form>
     </HomeContainer>
   );

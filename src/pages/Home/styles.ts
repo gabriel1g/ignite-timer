@@ -45,6 +45,11 @@ export const FormContainer = styled.div`
       border-bottom-color: ${({ theme }) => theme['green-500']};
       box-shadow: none;
     }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 `;
 
@@ -83,12 +88,11 @@ export const CountdownContainer = styled.div`
   }
 `;
 
-export const CountdownButton = styled.button`
+export const BaseCountdownButton = styled.button`
   width: 100%;
   padding: 1rem 2.5rem;
   border: none;
   border-radius: 8px;
-  background-color: ${({ theme }) => theme['green-500']};
   color: ${({ theme }) => theme['gray-100']};
   font-weight: bold;
   display: flex;
@@ -97,12 +101,28 @@ export const CountdownButton = styled.button`
   gap: 0.5rem;
   cursor: pointer;
 
-  &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme['green-700']};
-  }
-
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+`;
+
+export const StartCountdownButton = styled(BaseCountdownButton)`
+  background-color: ${({ theme }) => theme['green-500']};
+
+  &:hover:not(:disabled) {
+    background-color: ${({ theme }) => theme['green-700']};
+  }
+`;
+
+export const StopCountdownButton = styled(BaseCountdownButton)`
+  background-color: ${({ theme }) => theme['red-500']};
+
+  &:hover:not(:disabled) {
+    background-color: ${({ theme }) => theme['red-700']};
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px ${({ theme }) => theme['red-500']};
   }
 `;
