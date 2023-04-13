@@ -50,15 +50,27 @@ export function Home() {
 
     setPomodoros((prevState) => [...prevState, newPomodoro]);
     setActivePomodoroId(newPomodoro.id);
+    setAmountSecondsPassed(0);
+
     reset();
   }
 
   useEffect(() => {
     if (activePomodoro) {
-      setInterval(() => {
+      document.title = `${minutesAmountDisplay}:${secondsAmountDisplay}`;
+    }
+  }, [minutesAmountDisplay, secondsAmountDisplay, activePomodoro]);
+
+  useEffect(() => {
+    if (activePomodoro) {
+      var interval = setInterval(() => {
         setAmountSecondsPassed(differenceInSeconds(new Date(), activePomodoro.startDate));
       }, 1000);
     }
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [activePomodoro]);
 
   return (
