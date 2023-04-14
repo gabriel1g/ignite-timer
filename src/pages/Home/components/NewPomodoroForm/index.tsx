@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { PomodoroContext } from '@pages/Home';
+import { PomodoroContext } from '@contexts/PomodoroContext';
 
 import { FormContainer, MinutesAmountInput, TaskInput } from './styles';
 

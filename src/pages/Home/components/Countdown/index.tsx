@@ -2,14 +2,14 @@ import { useContext, useEffect, useState } from 'react';
 
 import { differenceInSeconds } from 'date-fns';
 
-import { PomodoroContext } from '@pages/Home';
+import { PomodoroContext } from '@contexts/PomodoroContext';
 
 import { CountdownContainer } from './styles';
 
 export function Countdown() {
-  const { activePomodoro, activePomodoroId, setActivePomodoroId, handleFinishPomodoro } = useContext(PomodoroContext);
-
   const [amountSecondsPassed, setAmountSecondsPassed] = useState<number>(0);
+
+  const { activePomodoro, activePomodoroId, setActivePomodoroId, finishPomodoro } = useContext(PomodoroContext);
 
   const totalSeconds = activePomodoro ? activePomodoro.minutesAmount * 60 : 0;
   const currentSeconds = totalSeconds - amountSecondsPassed;
@@ -28,7 +28,7 @@ export function Countdown() {
         const secondsDifference = differenceInSeconds(new Date(), activePomodoro.startDate);
 
         if (secondsDifference >= totalSeconds) {
-          handleFinishPomodoro();
+          finishPomodoro();
 
           clearInterval(interval);
           setActivePomodoroId(null);

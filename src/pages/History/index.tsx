@@ -1,6 +1,12 @@
+import { useContext } from 'react';
+
+import { PomodoroContext } from '@contexts/PomodoroContext';
+
 import { HistoryContainer, HistoryList, TaskStatus } from './styles';
 
 export function History() {
+  const { pomodoros } = useContext(PomodoroContext);
+
   return (
     <HistoryContainer>
       <h1>Meu histórico</h1>
