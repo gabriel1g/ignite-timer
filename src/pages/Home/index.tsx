@@ -25,13 +25,18 @@ export function Home() {
   });
 
   const { activePomodoro, createNewPomodoro, interruptPomodoro } = useContext(PomodoroContext);
-  const { handleSubmit, watch } = newPomodoroForm;
+  const { handleSubmit, watch, reset } = newPomodoroForm;
 
   const isSubmitDisabled = !watch('task');
 
+  function handleCreateNewPomodoro(data: PomodoroFormData) {
+    createNewPomodoro(data);
+    reset();
+  }
+
   return (
     <HomeContainer>
-      <form onSubmit={handleSubmit(createNewPomodoro)}>
+      <form onSubmit={handleSubmit(handleCreateNewPomodoro)}>
         <FormProvider {...newPomodoroForm}>
           <NewPomodoroForm />
         </FormProvider>

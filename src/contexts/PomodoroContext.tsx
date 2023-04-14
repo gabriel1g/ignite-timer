@@ -45,8 +45,6 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
 
     setPomodoros((prevState) => [...prevState, newPomodoro]);
     setActivePomodoroId(newPomodoro.id);
-
-    //reset();
   }
 
   function interruptPomodoro() {
