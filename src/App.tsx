@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { ThemeProvider } from 'styled-components';
 
+import { PomodoroContextProvider } from '@contexts/PomodoroContext';
 import { Router } from '@routes/Router';
 import { GlobalStyle } from '@styles/global';
 import { defaultTheme } from '@styles/themes/default';
@@ -11,7 +12,9 @@ export default function App() {
     <ThemeProvider theme={defaultTheme}>
       <GlobalStyle />
       <BrowserRouter>
-        <Router />
+        <PomodoroContextProvider>
+          <Router />
+        </PomodoroContextProvider>
       </BrowserRouter>
     </ThemeProvider>
   );

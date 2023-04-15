@@ -1,6 +1,15 @@
+import { useContext } from 'react';
+
+import { formatDistanceToNow } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
+
+import { PomodoroContext } from '@contexts/PomodoroContext';
+
 import { HistoryContainer, HistoryList, TaskStatus } from './styles';
 
 export function History() {
+  const { pomodoros } = useContext(PomodoroContext);
+
   return (
     <HistoryContainer>
       <h1>Meu histórico</h1>
@@ -16,78 +25,23 @@ export function History() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="completed">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="progress">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="interrupted">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="completed">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="progress">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="interrupted">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="completed">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="progress">Status</TaskStatus>
-              </td>
-            </tr>
-            <tr>
-              <td>Conserto de débitos técnicos</td>
-              <td>25 minutos</td>
-              <td>Há cerca de 2 meses</td>
-              <td>
-                <TaskStatus status="interrupted">Status</TaskStatus>
-              </td>
-            </tr>
+            {pomodoros.map((pomodoro) => (
+              <tr key={pomodoro.id}>
+                <td>{pomodoro.task}</td>
+                <td>{pomodoro.minutesAmount} minutos</td>
+                <td>
+                  {formatDistanceToNow(pomodoro.startDate, {
+                    addSuffix: true,
+                    locale: ptBR,
+                  })}
+                </td>
+                <td>
+                  {pomodoro.finishedDate && <TaskStatus status="completed">Concluído</TaskStatus>}
+                  {pomodoro.interruptedDate && <TaskStatus status="interrupted">Interrompido</TaskStatus>}
+                  {!pomodoro.finishedDate && !pomodoro.interruptedDate && <TaskStatus status="progress">Em andamento</TaskStatus>}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </HistoryList>
