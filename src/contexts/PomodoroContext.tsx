@@ -14,11 +14,15 @@ interface Pomodoro {
   finishedDate?: Date;
 }
 
+interface PomodorosState {
+  pomodoros: Pomodoro[];
+  activePomodoroId: string | null;
+}
+
 interface PomodoroContextProps {
   pomodoros: Pomodoro[];
   activePomodoro: Pomodoro | undefined;
   activePomodoroId: string | null;
-  setActivePomodoroId: (id: string | null) => void;
   createNewPomodoro: (data: PomodoroCreationData) => void;
   interruptPomodoro: () => void;
   finishedPomodoro: () => void;
@@ -31,16 +35,35 @@ interface PomodoroContextProviderProps {
 export const PomodoroContext = createContext({} as PomodoroContextProps);
 
 export function PomodoroContextProvider({ children }: PomodoroContextProviderProps) {
-  const [activePomodoroId, setActivePomodoroId] = useState<string | null>(null);
-  const [pomodoros, dispatch] = useReducer((state: Pomodoro[], action: any) => {
-    switch (action.type) {
-      case 'ADD_NEW_POMODORO':
-        return [...state, action.payload.newPomodoro];
-      default:
-        return state;
-    }
-  }, []);
-  console.log(pomodoros);
+  const [pomodorosState, dispatch] = useReducer(
+    (state: PomodorosState, action: any) => {
+      switch (action.type) {
+        case 'ADD_NEW_POMODORO':
+          return {
+            ...state,
+            pomodoros: [...state.pomodoros, action.payload.newPomodoro],
+            activePomodoroId: action.payload.newPomodoro.id,
+          };
+        case 'INTERRUPT_POMODORO':
+          return {
+            ...state,
+            pomodoros: state.pomodoros.map((pomodoro) => {
+              if (pomodoro.id === action.payload.activePomodoroId) {
+                return { ...pomodoro, interruptedDate: new Date() };
+              } else {
+                return pomodoro;
+              }
+            }),
+            activePomodoroId: null,
+          };
+        default:
+          return state;
+      }
+    },
+    { pomodoros: [], activePomodoroId: null } as PomodorosState
+  );
+
+  const { pomodoros, activePomodoroId } = pomodorosState;
 
   const activePomodoro = pomodoros.find((pomodoro) => pomodoro.id === activePomodoroId);
 
@@ -57,9 +80,6 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
         newPomodoro,
       },
     });
-
-    // setPomodoros((prevState) => [...prevState, newPomodoro]);
-    setActivePomodoroId(newPomodoro.id);
   }
 
   function interruptPomodoro() {
@@ -69,17 +89,6 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
         activePomodoroId,
       },
     });
-
-    // setPomodoros((prevState) =>
-    //   prevState.map((pomodoro) => {
-    //     if (pomodoro.id === activePomodoroId) {
-    //       return { ...pomodoro, interruptedDate: new Date() };
-    //     } else {
-    //       return pomodoro;
-    //     }
-    //   })
-    // );
-    setActivePomodoroId(null);
   }
 
   function finishedPomodoro() {
@@ -89,21 +98,11 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
         activePomodoroId,
       },
     });
-
-    // setPomodoros((prevState) =>
-    //   prevState.map((pomodoro) => {
-    //     if (pomodoro.id === activePomodoroId) {
-    //       return { ...pomodoro, finishedDate: new Date() };
-    //     } else {
-    //       return pomodoro;
-    //     }
-    //   })
-    // );
   }
 
   return (
     <PomodoroContext.Provider
-      value={{ pomodoros, activePomodoro, activePomodoroId, setActivePomodoroId, createNewPomodoro, interruptPomodoro, finishedPomodoro }}
+      value={{ pomodoros, activePomodoro, activePomodoroId, createNewPomodoro, interruptPomodoro, finishedPomodoro }}
     >
       {children}
     </PomodoroContext.Provider>
