@@ -9,7 +9,7 @@ import { CountdownContainer } from './styles';
 export function Countdown() {
   const [amountSecondsPassed, setAmountSecondsPassed] = useState<number>(0);
 
-  const { activePomodoro, activePomodoroId, setActivePomodoroId, finishPomodoro } = useContext(PomodoroContext);
+  const { activePomodoro, activePomodoroId, setActivePomodoroId, finishedPomodoro } = useContext(PomodoroContext);
 
   const totalSeconds = activePomodoro ? activePomodoro.minutesAmount * 60 : 0;
   const currentSeconds = totalSeconds - amountSecondsPassed;
@@ -28,7 +28,7 @@ export function Countdown() {
         const secondsDifference = differenceInSeconds(new Date(), activePomodoro.startDate);
 
         if (secondsDifference >= totalSeconds) {
-          finishPomodoro();
+          finishedPomodoro();
 
           clearInterval(interval);
           setActivePomodoroId(null);
