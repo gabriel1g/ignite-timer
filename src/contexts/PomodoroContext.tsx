@@ -56,6 +56,18 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
             }),
             activePomodoroId: null,
           };
+        case 'FINISHED_POMODORO':
+          return {
+            ...state,
+            pomodoros: state.pomodoros.map((pomodoro) => {
+              if (pomodoro.id === action.payload.activePomodoroId) {
+                return { ...pomodoro, finishedDate: new Date() };
+              } else {
+                return pomodoro;
+              }
+            }),
+            activePomodoroId: null,
+          };
         default:
           return state;
       }
