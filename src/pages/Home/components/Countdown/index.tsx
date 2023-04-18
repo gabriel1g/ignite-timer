@@ -25,7 +25,7 @@ export function Countdown() {
   useEffect(() => {
     if (activePomodoro) {
       var interval = setInterval(() => {
-        const secondsDifference = differenceInSeconds(new Date(), activePomodoro.startDate);
+        const secondsDifference = differenceInSeconds(new Date(), new Date(activePomodoro.startDate));
 
         if (secondsDifference >= totalSeconds) {
           finishedPomodoro();

@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useReducer } from 'react';
+import { ReactNode, createContext, useEffect, useReducer } from 'react';
 
 import { createNewPomodoroAction, finishedPomodoroAction, interruptPomodoroAction } from '@reducers/pomodoros/actions';
 import { Pomodoro, pomodorosReducer } from '@reducers/pomodoros/reducer';
@@ -24,7 +24,15 @@ interface PomodoroContextProviderProps {
 export const PomodoroContext = createContext({} as PomodoroContextProps);
 
 export function PomodoroContextProvider({ children }: PomodoroContextProviderProps) {
-  const [pomodorosState, dispatch] = useReducer(pomodorosReducer, { pomodoros: [], activePomodoroId: null });
+  const [pomodorosState, dispatch] = useReducer(pomodorosReducer, { pomodoros: [], activePomodoroId: null }, (initialState) => {
+    const storedStateAsJSON = localStorage.getItem('@ignite-timer:pomodoros-storage');
+
+    if (storedStateAsJSON) {
+      return JSON.parse(storedStateAsJSON);
+    } else {
+      return initialState;
+    }
+  });
 
   const { pomodoros, activePomodoroId } = pomodorosState;
 
@@ -47,6 +55,12 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
   function finishedPomodoro() {
     dispatch(finishedPomodoroAction(activePomodoroId));
   }
+
+  useEffect(() => {
+    const stateJSON = JSON.stringify(pomodorosState);
+
+    localStorage.setItem('@ignite-timer:pomodoros-storage', stateJSON);
+  }, [pomodorosState]);
 
   return (
     <PomodoroContext.Provider
