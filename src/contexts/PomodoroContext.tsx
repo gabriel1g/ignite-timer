@@ -1,6 +1,7 @@
-import { ReactNode, createContext, useReducer, useState } from 'react';
+import { ReactNode, createContext, useReducer } from 'react';
 
-import { Pomodoro, pomodorosReducer } from '@reducers/pomodoros';
+import { createNewPomodoroAction, finishedPomodoroAction, interruptPomodoroAction } from '@reducers/pomodoros/actions';
+import { Pomodoro, pomodorosReducer } from '@reducers/pomodoros/reducer';
 
 interface PomodoroCreationData {
   task: string;
@@ -36,30 +37,15 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
       startDate: new Date(),
     };
 
-    dispatch({
-      type: 'ADD_NEW_POMODORO',
-      payload: {
-        newPomodoro,
-      },
-    });
+    dispatch(createNewPomodoroAction(newPomodoro));
   }
 
   function interruptPomodoro() {
-    dispatch({
-      type: 'INTERRUPT_POMODORO',
-      payload: {
-        activePomodoroId,
-      },
-    });
+    dispatch(interruptPomodoroAction(activePomodoroId));
   }
 
   function finishedPomodoro() {
-    dispatch({
-      type: 'FINISHED_POMODORO',
-      payload: {
-        activePomodoroId,
-      },
-    });
+    dispatch(finishedPomodoroAction(activePomodoroId));
   }
 
   return (

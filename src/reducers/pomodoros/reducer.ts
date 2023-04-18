@@ -1,3 +1,5 @@
+import { ActionTypes } from '@reducers/pomodoros/actions';
+
 export interface Pomodoro {
   id: string;
   task: string;
@@ -14,13 +16,13 @@ interface PomodorosState {
 
 export function pomodorosReducer(state: PomodorosState, action: any) {
   switch (action.type) {
-    case 'ADD_NEW_POMODORO':
+    case ActionTypes.ADD_NEW_POMODORO:
       return {
         ...state,
         pomodoros: [...state.pomodoros, action.payload.newPomodoro],
         activePomodoroId: action.payload.newPomodoro.id,
       };
-    case 'INTERRUPT_POMODORO':
+    case ActionTypes.INTERRUPT_POMODORO:
       return {
         ...state,
         pomodoros: state.pomodoros.map((pomodoro) => {
@@ -32,7 +34,7 @@ export function pomodorosReducer(state: PomodorosState, action: any) {
         }),
         activePomodoroId: null,
       };
-    case 'FINISHED_POMODORO':
+    case ActionTypes.FINISHED_POMODORO:
       return {
         ...state,
         pomodoros: state.pomodoros.map((pomodoro) => {
