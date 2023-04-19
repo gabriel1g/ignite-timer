@@ -30,7 +30,7 @@ export function History() {
                 <td>{pomodoro.task}</td>
                 <td>{pomodoro.minutesAmount} minutos</td>
                 <td>
-                  {formatDistanceToNow(pomodoro.startDate, {
+                  {formatDistanceToNow(new Date(pomodoro.startDate), {
                     addSuffix: true,
                     locale: ptBR,
                   })}

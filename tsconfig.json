@@ -22,6 +22,7 @@
       "@contexts/*": ["contexts/*"],
       "@layouts/*": ["layouts/*"],
       "@pages/*": ["pages/*"],
+      "@reducers/*": ["reducers/*"],
       "@routes/*": ["routes/*"],
       "@styles/*": ["styles/*"]
     }

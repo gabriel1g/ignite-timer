@@ -1,27 +1,20 @@
-import { ReactNode, createContext, useState } from 'react';
+import { ReactNode, createContext, useEffect, useReducer } from 'react';
+
+import { createNewPomodoroAction, finishedPomodoroAction, interruptPomodoroAction } from '@reducers/pomodoros/actions';
+import { Pomodoro, pomodorosReducer } from '@reducers/pomodoros/reducer';
 
 interface PomodoroCreationData {
   task: string;
   minutesAmount: number;
 }
 
-interface Pomodoro {
-  id: string;
-  task: string;
-  minutesAmount: number;
-  startDate: Date;
-  interruptedDate?: Date;
-  finishedDate?: Date;
-}
-
 interface PomodoroContextProps {
   pomodoros: Pomodoro[];
   activePomodoro: Pomodoro | undefined;
   activePomodoroId: string | null;
-  setActivePomodoroId: (id: string | null) => void;
   createNewPomodoro: (data: PomodoroCreationData) => void;
   interruptPomodoro: () => void;
-  finishPomodoro: () => void;
+  finishedPomodoro: () => void;
 }
 
 interface PomodoroContextProviderProps {
@@ -31,8 +24,17 @@ interface PomodoroContextProviderProps {
 export const PomodoroContext = createContext({} as PomodoroContextProps);
 
 export function PomodoroContextProvider({ children }: PomodoroContextProviderProps) {
-  const [activePomodoroId, setActivePomodoroId] = useState<string | null>(null);
-  const [pomodoros, setPomodoros] = useState<Pomodoro[]>([]);
+  const [pomodorosState, dispatch] = useReducer(pomodorosReducer, { pomodoros: [], activePomodoroId: null }, (initialState) => {
+    const storedStateAsJSON = localStorage.getItem('@ignite-timer:pomodoros-storage');
+
+    if (storedStateAsJSON) {
+      return JSON.parse(storedStateAsJSON);
+    } else {
+      return initialState;
+    }
+  });
+
+  const { pomodoros, activePomodoroId } = pomodorosState;
 
   const activePomodoro = pomodoros.find((pomodoro) => pomodoro.id === activePomodoroId);
 
@@ -43,39 +45,26 @@ export function PomodoroContextProvider({ children }: PomodoroContextProviderPro
       startDate: new Date(),
     };
 
-    setPomodoros((prevState) => [...prevState, newPomodoro]);
-    setActivePomodoroId(newPomodoro.id);
+    dispatch(createNewPomodoroAction(newPomodoro));
   }
 
   function interruptPomodoro() {
-    setPomodoros((prevState) =>
-      prevState.map((pomodoro) => {
-        if (pomodoro.id === activePomodoroId) {
-          return { ...pomodoro, interruptedDate: new Date() };
-        } else {
-          return pomodoro;
-        }
-      })
-    );
-
-    setActivePomodoroId(null);
+    dispatch(interruptPomodoroAction(activePomodoroId));
   }
 
-  function finishPomodoro() {
-    setPomodoros((prevState) =>
-      prevState.map((pomodoro) => {
-        if (pomodoro.id === activePomodoroId) {
-          return { ...pomodoro, finishedDate: new Date() };
-        } else {
-          return pomodoro;
-        }
-      })
-    );
+  function finishedPomodoro() {
+    dispatch(finishedPomodoroAction(activePomodoroId));
   }
+
+  useEffect(() => {
+    const stateJSON = JSON.stringify(pomodorosState);
+
+    localStorage.setItem('@ignite-timer:pomodoros-storage', stateJSON);
+  }, [pomodorosState]);
 
   return (
     <PomodoroContext.Provider
-      value={{ pomodoros, activePomodoro, activePomodoroId, setActivePomodoroId, createNewPomodoro, interruptPomodoro, finishPomodoro }}
+      value={{ pomodoros, activePomodoro, activePomodoroId, createNewPomodoro, interruptPomodoro, finishedPomodoro }}
     >
       {children}
     </PomodoroContext.Provider>
