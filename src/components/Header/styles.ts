@@ -34,4 +34,8 @@ export const HeaderContainer = styled.header`
       }
     }
   }
+
+  @media screen and (max-width: 768px) {
+    padding-bottom: 1.5rem;
+  }
 `;

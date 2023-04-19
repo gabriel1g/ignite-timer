@@ -13,7 +13,7 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   body, input, textarea, button {
-    font-family: 'Roboto';
+    font-family: 'Roboto', monospace;
     font-size: 1rem;
     font-weight: normal;
   }

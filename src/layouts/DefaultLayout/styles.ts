@@ -6,6 +6,16 @@ export const LayoutContainer = styled.div`
   border-radius: 8px;
   margin: 5rem 10rem;
   background-color: ${({ theme }) => theme['gray-800']};
-  display: flex;
-  flex-direction: column;
+
+  @media screen and (max-width: 1200px) {
+    margin: 5rem 5rem;
+  }
+
+  @media screen and (max-width: 992px) {
+    margin: 5rem 2rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    margin: 5rem 0rem;
+  }
 `;
